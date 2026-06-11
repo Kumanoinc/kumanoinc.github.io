@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ZBTI | 你的专属放"粽"人格测试</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        :root {
+            --apple-blue: #007AFF;
+            --apple-blue-dark: #0051D5;
+            --apple-bg: #F5F5F7;
+            --apple-card: #FFFFFF;
+            --apple-text: #1D1D1F;
+            --apple-text-secondary: #86868B;
+            --apple-border: #E5E5EA;
+            --apple-green: #34C759;
+            --apple-orange: #FF9500;
+            --apple-red: #FF3B30;
+            --accent-purple: #AF52DE;
+            --accent-pink: #FF2D55;
+            --accent-teal: #5AC8FA;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: var(--apple-bg);
+            color: var(--apple-text);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        /* ========== 氛围感背景装饰 ========== */
+        .ambient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .ambient-bg::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            right: -30%;
+            width: 80vw;
+            height: 80vw;
+            background: radial-gradient(circle, rgba(0,122,255,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .ambient-bg::after {
+            content: '';
+            position: absolute;
+            bottom: -10%;
+            left: -20%;
+            width: 60vw;
+            height: 60vw;
+            background: radial-gradient(circle, rgba(175,82,222,0.06) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float 10s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(20px, -20px) scale(1.05); }
+            66% { transform: translate(-10px, 15px) scale(0.95); }
+        }
+
+        .deco-line {
+            position: fixed;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.15;
+        }
+
+        .deco-line-1 {
+            top: 10%;
+            left: -5%;
+            width: 50%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--apple-blue), transparent);
+            transform: rotate(-15deg);
+            animation: slideLine 12s linear infinite;
+        }
+
+        .deco-line-2 {
+            top: 40%;
+            right: -10%;
+            width: 60%;
+            height: 1.5px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            transform: rotate(10deg);
+            animation: slideLine 15s linear infinite reverse;
+        }
+
+        .deco-line-3 {
+            bottom: 20%;
+            left: -10%;
+            width: 70%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-teal), transparent);
+            transform: rotate(-8deg);
+            animation: slideLine 18s linear infinite;
+        }
+
+        @keyframes slideLine {
+            0% { transform: translateX(-100%) rotate(var(--r, 0deg)); opacity: 0; }
+            10% { opacity: 0.15; }
+            90% { opacity: 0.15; }
+            100% { transform: translateX(200%) rotate(var(--r, 0deg)); opacity: 0; }
+        }
+
+        .geo-shape {
+            position: fixed;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.08;
+        }
+
+        .geo-circle {
+            width: 120px;
+            height: 120px;
+            border: 2px solid var(--apple-blue);
+            border-radius: 50%;
+            top: 15%;
+            right: 5%;
+            animation: geoFloat 6s ease-in-out infinite;
+        }
+
+        .geo-square {
+            width: 80px;
+            height: 80px;
+            border: 2px solid var(--accent-purple);
+            border-radius: 16px;
+            bottom: 25%;
+            right: 10%;
+            animation: geoFloat 8s ease-in-out infinite 1s;
+        }
+
+        .geo-diamond {
+            width: 60px;
+            height: 60px;
+            border: 2px solid var(--accent-teal);
+            transform: rotate(45deg);
+            top: 50%;
+            left: 5%;
+            animation: geoFloat 7s ease-in-out infinite 0.5s;
+        }
+
+        @keyframes geoFloat {
+            0%, 100% { transform: translateY(0) rotate(var(--base-rotate, 0deg)); }
+            50% { transform: translateY(-20px) rotate(var(--base-rotate, 0deg)); }
+        }
+
+        .geo-diamond { --base-rotate: 45deg; }
+
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 0;
+            border-radius: 50%;
+            opacity: 0.2;
+            animation: particleFloat linear infinite;
+        }
+
+        @keyframes particleFloat {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 0.2; }
+            90% { opacity: 0.2; }
+            100% { transform: translateY(-100px) scale(1); opacity: 0; }
+        }
+
+        /* ========== Apple 风格组件 ========== */
+        .apple-card {
+            background: var(--apple-card);
+            border-radius: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.06);
+            transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1), box-shadow 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+            position: relative;
+            z-index: 1;
+        }
+
+        @media (hover: hover) {
+            .apple-card:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 16px 32px rgba(0,0,0,0.08);
+            }
+        }
+
+        .apple-card:active { transform: scale(0.98); }
+
+        .apple-btn {
+            background: var(--apple-blue);
+            color: white;
+            font-weight: 600;
+            font-size: 17px;
+            padding: 16px 32px;
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            letter-spacing: -0.01em;
+            box-shadow: 0 1px 2px rgba(0,122,255,0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .apple-btn:active {
+            transform: scale(0.96);
+            background: var(--apple-blue-dark);
+        }
+
+        .apple-btn-secondary {
+            background: var(--apple-border);
+            color: var(--apple-blue);
+            box-shadow: none;
+        }
+
+        .apple-btn-secondary:active { background: #D1D1D6; }
+
+        .option-card {
+            background: var(--apple-card);
+            border: 1.5px solid var(--apple-border);
+            border-radius: 16px;
+            padding: 18px 20px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .option-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, var(--apple-blue), var(--accent-purple));
+            border-radius: 16px 0 0 16px;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        .option-card.selected {
+            border-color: var(--apple-blue);
+            background: linear-gradient(135deg, rgba(0,122,255,0.04), rgba(175,82,222,0.03));
+            box-shadow: 0 0 0 4px rgba(0,122,255,0.08), 0 4px 16px rgba(0,122,255,0.1);
+        }
+
+        .option-card.selected::before { opacity: 1; }
+
+        .progress-container {
+            background: var(--apple-border);
+            border-radius: 100px;
+            height: 6px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, var(--apple-blue), var(--accent-purple));
+            height: 100%;
+            border-radius: 100px;
+            transition: width 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+
+        .page-enter {
+            animation: pageEnter 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+        }
+
+        @keyframes pageEnter {
+            from { opacity: 0; transform: translateY(20px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .slide-up {
+            animation: slideUp 0.35s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .result-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+        }
+
+        .apple-tag {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--apple-blue), var(--accent-purple));
+            color: white;
+            padding: 8px 20px;
+            border-radius: 100px;
+            font-weight: 600;
+            font-size: 15px;
+            letter-spacing: -0.01em;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .apple-tag:active { transform: scale(0.95); }
+
+        .content-block {
+            background: var(--apple-card);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--apple-border);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 粽子介绍弹窗 */
+        #zongziModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: none;
+            justify-content: center;
+            align-items: flex-end;
+            z-index: 1000;
+            padding: 0;
+        }
+
+        .zongzi-sheet {
+            background: var(--apple-card);
+            border-radius: 24px 24px 0 0;
+            width: 100%;
+            max-width: 480px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 24px;
+            animation: sheetUp 0.35s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+            position: relative;
+        }
+
+        @keyframes sheetUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .sheet-handle {
+            width: 36px;
+            height: 4px;
+            background: var(--apple-border);
+            border-radius: 2px;
+            margin: 0 auto 20px;
+        }
+
+        .zongzi-img-icon {
+            width: 120px;
+            height: 120px;
+            border-radius: 20px;
+            margin: 0 auto 16px;
+            object-fit: cover;
+            box-shadow: 0 8px 24px rgba(0,122,255,0.25);
+            display: block;
+        }
+
+        .hidden { display: none !important; }
+
+        .page-container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 24px 20px 40px;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        .nav-header {
+            text-align: center;
+            padding: 12px 0 20px;
+        }
+
+        .nav-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--apple-text);
+        }
+
+        .question-indicator {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .indicator-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--apple-border);
+            transition: all 0.3s ease;
+        }
+
+        .indicator-dot.active {
+            background: linear-gradient(135deg, var(--apple-blue), var(--accent-purple));
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        .indicator-dot.completed {
+            background: var(--apple-green);
+        }
+
+        .hero-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(0,122,255,0.12) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .result-glow {
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(0,122,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .clickable-zongzi {
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+        }
+
+        .clickable-zongzi:active { opacity: 0.8; }
+    </style>
+</head>
+<body>
+    <!-- 氛围感背景层 -->
+    <div class="ambient-bg"></div>
+    <div class="deco-line deco-line-1" style="--r: -15deg;"></div>
+    <div class="deco-line deco-line-2" style="--r: 10deg;"></div>
+    <div class="deco-line deco-line-3" style="--r: -8deg;"></div>
+    <div class="geo-shape geo-circle"></div>
+    <div class="geo-shape geo-square"></div>
+    <div class="geo-shape geo-diamond"></div>
+    <div id="particles"></div>
+
+    <div class="page-container">
+        <!-- 开始页 -->
+        <div id="startPage" class="page-enter">
+            <div class="nav-header" style="position: relative;">
+                <div class="hero-glow"></div>
+                <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #007AFF, #AF52DE); border-radius: 20px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; font-size: 40px; box-shadow: 0 8px 32px rgba(0,122,255,0.3); position: relative; z-index: 1;">🍙</div>
+                <h1 style="font-size: 28px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; position: relative; z-index: 1;">ZBTI</h1>
+                <p style="font-size: 17px; color: var(--apple-text-secondary); font-weight: 400; position: relative; z-index: 1;">放"粽"人格测试</p>
+            </div>
+
+            <div class="apple-card" style="padding: 28px; margin-bottom: 24px;">
+                <p style="font-size: 21px; font-weight: 600; color: var(--apple-text); margin-bottom: 20px; line-height: 1.4; text-align: center;">日常卷生卷死 · 端午放纵去野</p>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div style="display: flex; align-items: center; gap: 12px; width: 100%; justify-content: center;">
+                        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, rgba(0,122,255,0.1), rgba(175,82,222,0.1)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;">📝</div>
+                        <span style="font-size: 15px; color: var(--apple-text-secondary); width: 210px;">本次测试共 10 道单选题</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; width: 100%; justify-content: center;">
+                        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, rgba(0,122,255,0.1), rgba(175,82,222,0.1)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;">🎯</div>
+                        <span style="font-size: 15px; color: var(--apple-text-secondary); width: 210px;">请选择最贴合你真实想法的选项</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; width: 100%; justify-content: center;">
+                        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, rgba(0,122,255,0.1), rgba(175,82,222,0.1)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;">✨</div>
+                        <span style="font-size: 15px; color: var(--apple-text-secondary); width: 210px;">测完解锁你的专属本命粽子人格</span>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="startTest()" class="apple-btn" style="width: 100%;">开始测试</button>
+        </div>
+
+        <!-- 题目页 -->
+        <div id="questionPage" class="hidden">
+            <div class="nav-header">
+                <p class="nav-title">第 <span id="currentQuestion">1</span> 题</p>
+            </div>
+
+            <div class="question-indicator" id="questionIndicator"></div>
+
+            <div style="margin-bottom: 24px;">
+                <div class="flex justify-between text-sm mb-2" style="color: var(--apple-text-secondary); font-size: 13px; font-weight: 500;">
+                    <span>进度</span>
+                    <span id="progressText">10%</span>
+                </div>
+                <div class="progress-container">
+                    <div id="progressBar" class="progress-bar" style="width: 10%"></div>
+                </div>
+            </div>
+
+            <h2 id="questionTitle" style="font-size: 22px; font-weight: 600; color: var(--apple-text); margin-bottom: 24px; line-height: 1.5; letter-spacing: -0.01em;"></h2>
+
+            <div id="optionsContainer" style="display: flex; flex-direction: column; gap: 12px;"></div>
+        </div>
+
+        <!-- 结果页 -->
+        <div id="resultPage" class="hidden page-enter">
+            <div class="nav-header" style="position: relative;">
+                <div class="result-glow"></div>
+                <p class="nav-title" style="position: relative; z-index: 1;">测试结果</p>
+            </div>
+
+            <div class="apple-card" style="padding: 24px; margin-bottom: 20px; text-align: center; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at center, rgba(0,122,255,0.03) 0%, transparent 50%); pointer-events: none;"></div>
+                <img id="resultZongzi" class="result-image clickable-zongzi" style="margin-bottom: 20px; position: relative; z-index: 1;" onclick="showZongziDetail()">
+                <div class="apple-tag clickable-zongzi" id="resultTitle" style="margin-bottom: 12px; position: relative; z-index: 1;" onclick="showZongziDetail()"></div>
+                <p class="clickable-zongzi" id="resultCode" style="font-size: 15px; color: var(--apple-text-secondary); font-weight: 500; position: relative; z-index: 1;" onclick="showZongziDetail()"></p>
+            </div>
+
+            <div class="content-block" style="margin-bottom: 16px;">
+                <h3 style="font-size: 17px; font-weight: 600; color: var(--apple-text); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                    <span style="width: 28px; height: 28px; background: linear-gradient(135deg, #007AFF, #AF52DE); border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; color: white; font-size: 14px;">1</span>
+                    人格解析
+                </h3>
+                <p id="resultDesc" style="font-size: 15px; color: var(--apple-text-secondary); line-height: 1.7;"></p>
+            </div>
+
+            <div class="content-block" style="margin-bottom: 24px; background: linear-gradient(135deg, rgba(0,122,255,0.04), rgba(175,82,222,0.04)); border-color: rgba(0,122,255,0.1);">
+                <h3 style="font-size: 17px; font-weight: 600; color: var(--apple-text); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                    <span style="width: 28px; height: 28px; background: linear-gradient(135deg, #FF9500, #FF2D55); border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; color: white; font-size: 14px;">2</span>
+                    发圈文案
+                </h3>
+                <p id="resultShare" style="font-size: 15px; color: var(--apple-text); line-height: 1.7; font-weight: 500;"></p>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <button onclick="restartTest()" class="apple-btn apple-btn-secondary" style="width: 100%;">重新测试</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 粽子介绍弹窗 -->
+    <div id="zongziModal" onclick="closeZongziModal(event)">
+        <div class="zongzi-sheet" onclick="event.stopPropagation()">
+            <div class="sheet-handle"></div>
+            <img id="zongziDetailImg" class="zongzi-img-icon" src="" alt="">
+            <h2 id="zongziDetailTitle" style="font-size: 24px; font-weight: 700; text-align: center; margin-bottom: 8px; color: var(--apple-text);"></h2>
+            <p id="zongziDetailSubtitle" style="font-size: 15px; color: var(--apple-text-secondary); text-align: center; margin-bottom: 24px; font-weight: 500;"></p>
+            <div id="zongziDetailContent" style="font-size: 15px; line-height: 1.8; color: var(--apple-text);"></div>
+            <button onclick="closeZongziModal()" class="apple-btn" style="width: 100%; margin-top: 24px;">知道了</button>
+        </div>
+    </div>
+    <script>
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const colors = ['rgba(0,122,255,0.15)', 'rgba(175,82,222,0.12)', 'rgba(90,200,250,0.1)'];
+            for (let i = 0; i < 15; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                const size = Math.random() * 6 + 2;
+                p.style.width = size + 'px';
+                p.style.height = size + 'px';
+                p.style.background = colors[Math.floor(Math.random() * colors.length)];
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDuration = (Math.random() * 10 + 8) + 's';
+                p.style.animationDelay = (Math.random() * 5) + 's';
+                container.appendChild(p);
+            }
+        }
+        createParticles();
+
+        const questions = [
+            {title:"周五下班，一周的活全干完了，接下来两天完全没人管你，你的第一波操作是？",options:[{text:"立刻摇人！组局宵夜唱K一条龙，人越多越嗨，不玩到凌晨不回家",letter:"N"},{text:"手机调静音，火速回家，拉上窗帘点好外卖，谁也别打扰我的独处快乐",letter:"J"},{text:"先列好周末放纵清单，几点吃大餐、几点看电影、几点补觉，安排得明明白白",letter:"L"},{text:"往沙发上一瘫，啥也不想啥也不计划，饿了吃困了睡，怎么爽怎么来",letter:"S"}]},
+            {title:"朋友喊你一起发疯，去做一件你从来没试过、有点出格的事，你会？",options:[{text:"直接冲！放纵就是要突破常规，没试过才更要去，主打一个无所畏惧",letter:"Y"},{text:"先问清楚所有细节，算好时间、预算、风险，确认稳妥不踩坑再决定去不去",letter:"W"},{text:"必须去！只要和好朋友一起，怎么疯都好玩，人多放纵才够味",letter:"N"},{text:"婉拒了哈，比起折腾出门，在家躺着摆烂才是真的爽",letter:"J"}]},
+            {title:"好不容易有个完整假期，你打算彻底躺平，结果家人/领导突然找你，让你处理一件不紧急的事，你会？",options:[{text:"直接无视，放假就是我私人的时间，天塌下来也等我休完假再说",letter:"Q"},{text:"先安抚好对方，说清楚放假不处理工作，休完假第一时间解决，不扫自己的兴也不闹僵",letter:"R"},{text:"快速处理完，不耽误自己的休假计划，主打一个高效收尾，玩得更安心",letter:"L"},{text:"嘴上答应着，转头继续躺平，啥时候想起来啥时候再说，先休假最重要",letter:"S"}]},
+            {title:"花钱的时候，你更符合以下哪种情况？",options:[{text:"看中很久的东西，平时舍不得买，这次必须拿下，主打一个犒劳自己",letter:"Y"},{text:"提前做好预算，吃喝玩乐都在预算内，玩得开心也不超支，绝不乱花钱",letter:"W"},{text:"必须喊上朋友一起拼单/团购，好东西要一起分享，大家一起才快乐",letter:"R"},{text:"先算清楚性价比，判断是不是智商税，绝不盲目冲动消费",letter:"Q"}]},
+            {title:"工作日摸鱼，你更倾向于哪种方式？",options:[{text:"摸鱼也要有规划，干完核心活再摸，摸得安心不被抓",letter:"L"},{text:"想摸就摸，管它活干没干完，主打一个精神放松，开心最重要",letter:"S"},{text:"拉上同事一起摸鱼唠嗑、分享八卦，摸鱼也要热热闹闹的",letter:"N"},{text:"安安静静自己摸鱼，刷视频看小说，绝不拉人也绝不被人发现",letter:"J"}]},
+            {title:"朋友失恋/失业，喊你一起陪他放纵发疯，你会？",options:[{text:"全程陪疯，他想喝酒就喝、想骂就骂、想通宵就通宵，主打一个情绪陪伴",letter:"R"},{text:"先陪他发泄，等他冷静下来，一针见血点出问题，帮他理清楚后续路怎么走",letter:"Q"},{text:"立刻组个发疯局，喊上一堆朋友陪他，人多热闹，坏情绪散得快",letter:"N"},{text:"带他去吃顿好的，安安静静陪着，不用多说什么，主打一个治愈陪伴",letter:"J"}]},
+            {title:"关于放纵熬夜，你更符合以下哪种情况？",options:[{text:"平时早睡早起，此刻必须熬个大夜，追剧打游戏，把平时缺的快乐补回来",letter:"Y"},{text:"就算放纵熬夜，也绝不打乱作息，早睡早起，保持健康，绝不拿身体造",letter:"W"},{text:"一边熬夜，一边备好护肝片、凉茶、面膜，主打一个朋克养生式",letter:"Q"},{text:"困了就睡、醒了就玩，不管几点，放纵起来就是要彻底摆脱时间束缚",letter:"S"}]},
+            {title:"你心中顶级的畅快旅行，是以下哪种？",options:[{text:"提前做好全流程攻略，行程、酒店、美食全部安排好，精准踩点不踩雷",letter:"L"},{text:"只定好往返机票，剩下的全随缘，走到哪玩到哪，不赶行程不打卡，怎么舒服怎么来",letter:"S"},{text:"专门找小众冷门目的地，避开网红打卡点，玩点别人没玩过的，就要独一无二",letter:"Y"},{text:"直接抄朋友的成熟旅行攻略，选经典热门线路，稳妥不出错，玩得开心最重要",letter:"W"}]},
+            {title:"放纵的时候，你不小心忘记了DDL，你会？",options:[{text:"立刻止损，制定补救方案，快速把烂摊子收拾好，下次放纵绝对把控好度",letter:"L"},{text:"摆烂到底，反正都玩脱了，不如继续放纵，天塌下来有高个子顶着",letter:"S"},{text:"先找朋友吐槽，一起想办法解决，主打一个遇事不慌，有人陪就不怕",letter:"N"},{text:"冷静复盘时间规划的问题，下次绝对不犯同样的错误",letter:"Q"}]},
+            {title:"身边人都在卷，只有你想躺平，还被人说不上进，你会？",options:[{text:"直接回怼，我的人生我做主，想卷就卷，想躺平就躺平，轮不到别人指手画脚",letter:"Q"},{text:"表面附和，转头继续躺平，我的快乐，没必要和别人解释",letter:"J"},{text:"拉着身边人一起，把卷王都变成躺平搭子，大家一起快乐才是真的快乐",letter:"N"},{text:"不被别人影响，按自己的节奏来，该躺平躺平，该努力努力，张弛有度才是人生",letter:"W"}]}
+        ];
+
+        const results = {
+            "NWRS": { title: "社牛显眼包放粽王", zongzi: "杨枝甘露味水晶粽", image: "images/nwrs.webp", desc: "朋友圈第一社交疯批！下班秒变组局达人，假期必须人挤人狂欢，花钱有分寸，玩乐有计划，主打一个热闹到天明！你是聚会气氛组天花板，甜到上头不腻人，疯到尽兴不扰民，端午没你根本嗨不起来！", share: "端午身份认证！我是社牛显眼包放粽王🍙 没人陪我疯，我就拉着全世界一起疯！" },
+            "JWRS": { title: "宅家摆烂躺平大师", zongzi: "陈皮红豆沙味水晶粽", image: "images/jwrs.webp", desc: "顶级社恐治愈家，放假=闭关！手机静音、窗帘拉死、外卖点满，拒绝一切无效社交，独处才是人生顶级享受。做事稳如老狗，不冲动不折腾，温柔内敛还超好rua，一个人就能快乐到起飞～", share: "别喊我出门！我是宅家摆烂躺平大师🍙 端午的快乐，是沙发和外卖给的！" },
+            "NYRS": { title: "甜野叛逆疯批玩家", zongzi: "海盐荔枝味水晶粽", image: "images/nyrs.webp", desc: "可盐可甜的反骨仔！放纵从不走寻常路，新鲜事第一个冲，小众局必须占C位。爱热闹也爱自由，敢发疯也懂独处，不被定义不随大流，端午放纵主打一个：我开心，你随意！", share: "测出来了！我是甜野叛逆疯批玩家🍙 端午就要野出新高度，小众不撞款！" },
+            "JYRL": { title: "嘴硬心软江湖大佬", zongzi: "猪脚姜味水晶粽", image: "images/jyrl.webp", desc: "外表高冷不好惹，内心暖到冒热气！朋友出事第一个冲，嘴上骂骂咧咧，身体比谁都靠谱。做事有规划，放纵够洒脱，典型的江湖人性格，外刚内柔，是朋友最安心的靠山！", share: "身份暴露！我是嘴硬心软江湖大佬🍙 嘴上嫌麻烦，陪你疯到天荒地老！" },
+            "JWQS": { title: "人间清醒灭火队长", zongzi: "金银花凉茶味水晶粽", image: "images/jwqs.webp", desc: "朋友眼中的理智天花板！再上头的局都能拉回现实，不冲动消费、不盲目发疯，独处冷静，做事稳妥。专治恋爱脑、冲动怪，放纵也拎得清轻重，主打一个：稳如老狗，绝不踩坑！", share: "端午人设：人间清醒灭火队长🍙 别人发疯我冷静，清醒放纵才最香！" },
+            "JYQS": { title: "魔性反骨小众怪咖", zongzi: "腐乳味水晶粽", image: "images/jyqs.webp", desc: "不走寻常路的奇葩宝藏！热门劝退，小众狂喜，独处自有小宇宙，遇事冷静爱复盘。不迎合大众，不随波逐流，魔性又上头，懂的人都爱死你，不懂的人根本不配！", share: "小众天花板！我是魔性反骨小众怪咖🍙 端午就要做最特别的那一个！" },
+            "NWQL": { title: "自律卷王放纵战神", zongzi: "糙米牛肉轻食粽", image: "images/nwql.webp", desc: "时间管理大师本师！玩得最疯，干得最稳，社交拉满，规划满分。放纵不摆烂，玩乐不拖沓，张弛有度收放自如，卷王里最会玩，玩家中最自律，端午全能天花板！", share: "无敌了！我是自律卷王放纵战神🍙 放纵自律两手抓，快乐效率全拿下！" },
+            "NWRL": { title: "佛系松弛感天花板", zongzi: "燕麦南乳粗粮粽", image: "images/nwrl.webp", desc: "不卷不摆的平衡大师！爱热闹也爱安静，有计划也懂随性，不强迫自己，不为难别人。生活态度通透又温柔，端午主打一个：怎么舒服怎么来，松弛感直接拉满！", share: "端午终极状态！我是佛系松弛感天花板🍙 不卷不摆，舒服万岁！" },
+            "NYRL": { title: "全能治愈快乐搭子", zongzi: "玉米鸡肉轻食粽", image: "images/nyrl.webp", desc: "全人类最想贴贴的神仙搭子！朋友难过全程陪哭，聚会狂欢全程带飞，温柔靠谱重情重义。不管是疯玩还是emo，有你在就超安心，行走的小太阳，治愈一切不开心！", share: "最佳搭子认证！我是全能治愈快乐搭子🍙 陪你疯陪你闹，治愈所有小烦恼！" },
+            "JYRS": { title: "温柔治愈暖心搭子", zongzi: "玉米鸡肉轻食粽", image: "images/jyrs.webp", desc: "低调温柔的治愈小天使！不爱张扬但超靠谱，安静陪伴胜过千言万语，朋友难过默默守护，玩乐时温柔捧场。内敛又暖心，是身边人最珍贵的温柔宝藏～", share: "端午限定！我是温柔治愈暖心搭子🍙 安安静静陪着你，就是最大的快乐！" },
+            "JYQL": { title: "低调闷骚隐世大佬", zongzi: "紫薯荞麦轻食粽", image: "images/jyql.webp", desc: "深藏不露的低调王者！不爱凑热闹，不喜欢刷存在感，独处时光最惬意，做事理性有规划。默默发光，佛系生活，快乐简单又纯粹，是低调到极致的实力派！", share: "低调上分！我是低调闷骚隐世大佬🍙 不吵不闹，自己快乐就好！" },
+            "JWQL": { title: "佛系淡定隐世高手", zongzi: "紫薯荞麦轻食粽", image: "images/jwql.webp", desc: "与世无争的淡定仙人！不爱社交不爱折腾，按自己的节奏生活，理性冷静不慌不忙。不争不抢不内耗，佛系通透又自在，端午主打一个：岁月静好，独自快乐！", share: "佛系人设焊死！我是佛系淡定隐世高手🍙 端午躺平，快乐无边！" },
+            "NYQS": { title: "朋克养生续命大师", zongzi: "黄精核桃养元粽", image: "images/nyqs.webp", desc: "当代年轻人真实写照！边熬夜边敷面膜，边放纵边养生，爱疯爱玩更爱自己。熬夜不垮脸，放纵不伤身，主打一个：造作归造作，养生不能落！", share: "本人现状！我是朋克养生续命大师🍙 边嗨边补，端午快乐又健康！" },
+            "NYQL": { title: "精致养生快乐玩家", zongzi: "黄精核桃养元粽", image: "images/nyql.webp", desc: "精致利己型放纵达人！玩得尽兴，养得到位，热闹养生两不误。爱冒险更爱自己，会发疯也会复盘，把日子过得精致又洒脱，快乐健康全拿捏！", share: "精致玩家上线！我是精致养生快乐玩家🍙 端午放纵，健康快乐双丰收！" },
+            "NWQS": { title: "全能顶配人生赢家", zongzi: "灵芝高端元气粽", image: "images/nwqs.webp", desc: "老天爷追着喂饭的顶配大佬！社交、理性、规划全拉满，控场能力MAX，不管是放纵玩乐还是处理事情，全都游刃有余。端午全场C位，气场全开，自带主角光环！", share: "直接封神！我是全能顶配人生赢家🍙 端午C位非我莫属！" },
+            "JWRL": { title: "低调顶配淡定王者", zongzi: "灵芝高端元气粽", image: "images/jwrl.webp", desc: "不张扬的顶级实力派！低调内敛却能力爆表，张弛有度从容自信，不抢风头却自带光芒。不管生活还是玩乐，都能轻松拿捏，是隐藏在人群中的顶配王者！", share: "低调封神！我是低调顶配淡定王者🍙 不声不响，惊艳全场！" }
+        };
+
+        // 粽子介绍文案 - 精简版：只保留核心成分最后一句 + 图片编码
+        const zongziDetails = {
+            "杨枝甘露味水晶粽": {
+                img: "images/detail/yangzhi.webp",
+                title: "杨枝甘露味水晶粽",
+                subtitle: "社交悍匪的甜蜜武器",
+                content: `<p style="font-size: 16px; text-align: center; color: var(--apple-text-secondary); margin-bottom: 16px;">芒果粒和西柚粒在口中爆开</p>
+                <p style="font-size: 15px; line-height: 1.8; color: var(--apple-text);"><strong>🔥 人格匹配：</strong>就像你一样，外表亮眼吸睛，内在丰富有层次，走到哪都是焦点，甜到让人忘不了！</p>`
+            },
+            "陈皮红豆沙味水晶粽": {
+                img: "images/detail/chenpi.webp",
+                title: "陈皮红豆沙味水晶粽",
+                subtitle: "宅家治愈系温柔担当",
+                content: `<p style="font-size: 16px; text-align: center; color: var(--apple-text-secondary); margin-bottom: 16px;">陈皮的清香恰到好处地解了甜腻</p>
+                <p style="font-size: 15px; line-height: 1.8; color: var(--apple-text);"><strong>🔥 人格匹配：</strong>不张扬但超靠谱，像你的存在一样，安静陪伴胜过千言万语，是身边人最珍贵的温柔宝藏。</p>`
+            },
+            "海盐荔枝味水晶粽": {
+                img: "images/detail/haixian.webp",
+                title: "海盐荔枝味水晶粽",
+                subtitle: "甜野女孩的叛逆宣言",
+                content: `<p style="font-size: 16px; text-align: center; color: var(--apple-text-secondary); margin-bottom: 16px;">荔枝的甜蜜刚要腻，海盐的咸鲜就跳出来打断</p>
+                <p style="font-size: 15px; line-height: 1.8; color: var(--apple-text);"><strong>🔥 人格匹配：</strong>就像你一样，不走寻常路，甜中带野，让人猜不透又忍不住想靠近，小众但绝对惊艳！</p>`
+            },
+            "猪脚姜味水晶粽": {
+                img: "images/detail/zhujiao.webp",
+                title: "猪脚姜味水晶粽",
+                subtitle: "江湖大佬的硬核浪漫",
+                content: `<p style="font-size: 16px; text-align: center; color: var(--apple-text-secondary); margin-bottom: 16px;">姜的辛辣、猪脚的软糯、醋的微酸，三重暴击在口中炸开</p>
+                <p style="font-size: 15px; line-height: 1.8; color: var(--apple-text);"><strong>🔥 人格匹配：</strong>外表硬核不好惹，内在暖到冒热气。就像你，嘴上嫌弃身体诚实，朋友有事第一个冲！</p>`
+            },
+            "金银花凉茶味水晶粽": {
+                img: "images/detail/jinyinhua.webp",
+                title: "金银花凉茶味水晶粽",
+                subtitle: "人间清醒的降火神器",
+                content: `<p style="font-size: 16px; text-align: center; color: var(--apple-text-secondary); margin-bottom: 16px;">入口微苦回甘，草本清香在舌尖散开</p>
+                <p style="font-size: 15px; line-height: 1.8; color: var(--apple-text);"><strong>🔥 人格匹配：</strong>永远冷静理智，在所有人上头的时候拉住缰绳。就像这款粽，不甜不咸但必不可少，是团队里的定海神针。</p>`
+            },
+            "腐乳味水晶粽": {
+                img: "images/detail/furu.webp",
+                title: "腐乳味水晶粽",
+                subtitle: "小众怪咖的魔性魅力",
+                content: `<p style="font-size: 16px; text-align: center; color: var(--apple-text-secondary); margin-bottom: 16px;">腐乳的咸香渗入每一粒糯米</p>
+                <p style="font-size: 15px; line-height: 1.8; color: var(--apple-text);"><strong>🔥 人格匹配：</strong>不走寻常路，热门劝退小众狂喜。就像你，不迎合不随波逐流，懂的人都爱死你，不懂的人根本不配！</p>`
+            },
+            "糙米牛肉轻食粽": {
+                img: "images/detail/caomi.webp",
+                title: "糙米牛肉轻食粽",
+                subtitle: "自律狂魔的能量补给",
+                content: `<p style="font-size: 16px; text-align: center; color: var(--apple-text-secondary); margin-bottom: 16px;">糙米有嚼劲，牛肉鲜香不柴，蔬菜带来清爽</p>
+                <p style="font-size: 15px; line-height: 1.8; color: var(--apple-text);"><strong>🔥 人格匹配：</strong>放纵也要有计划，玩乐也要有效率。就像你，卷王里最会玩，玩家中最自律，永远张弛有度！</p>`
+            },
+            "燕麦南乳粗粮粽": {
+                img: "images/detail/yanmai.webp",
+                title: "燕麦南乳粗粮粽",
+                subtitle: "佛系青年的comfort food",
+                content: `<p style="font-size: 16px; text-align: center; color: var(--apple-text-secondary); margin-bottom: 16px;">燕麦的软糯、粗粮的颗粒感、南乳的咸香，层次丰富但不刺激</p>
+                <p style="font-size: 15px; line-height: 1.8; color: var(--apple-text);"><strong>🔥 人格匹配：</strong>不卷不摆，怎么舒服怎么来。就像你，通透温柔，不强迫自己不为难别人，松弛感直接拉满！</p>`
+            },
+            "玉米鸡肉轻食粽": {
+                img: "images/detail/yumi.webp",
+                title: "玉米鸡肉轻食粽",
+                subtitle: "治愈系小太阳的能量包",
+                content: `<p style="font-size: 16px; text-align: center; color: var(--apple-text-secondary); margin-bottom: 16px;">玉米的甜、鸡肉的鲜、胡萝卜的脆，每一口都是阳光的味道</p>
+                <p style="font-size: 15px; line-height: 1.8; color: var(--apple-text);"><strong>🔥 人格匹配：</strong>行走的小太阳，治愈一切不开心。就像这款粽，温柔靠谱，有你在就超安心，全人类都想贴贴！</p>`
+            },
+            "紫薯荞麦轻食粽": {
+                img: "images/detail/zishu.webp",
+                title: "紫薯荞麦轻食粽",
+                subtitle: "隐世高手的低调内功",
+                content: `<p style="font-size: 16px; text-align: center; color: var(--apple-text-secondary); margin-bottom: 16px;">紫薯的自然香甜，荞麦的淡淡苦味，软糯中带着一丝韧性</p>
+                <p style="font-size: 15px; line-height: 1.8; color: var(--apple-text);"><strong>🔥 人格匹配：</strong>深藏不露，低调发光。就像你，不爱刷存在感但实力爆表，佛系通透，岁月静好独自快乐。</p>`
+            },
+            "黄精核桃养元粽": {
+                img: "images/detail/huangjing.webp",
+                title: "黄精核桃养元粽",
+                subtitle: "朋克养生的续命仙丹",
+                content: `<p style="font-size: 16px; text-align: center; color: var(--apple-text-secondary); margin-bottom: 16px;">核桃的酥脆、黄精的微甜、枸杞的软糯，咬一口感觉自己又多了三天寿命</p>
+                <p style="font-size: 15px; line-height: 1.8; color: var(--apple-text);"><strong>🔥 人格匹配：</strong>边造作边补救，边嗨边补。就像你，爱疯爱玩更爱自己，熬夜不垮脸放纵不伤身，养生式放纵第一人！</p>`
+            },
+            "灵芝高端元气粽": {
+                img: "images/detail/lingzhi.webp",
+                title: "灵芝高端元气粽",
+                subtitle: "顶配大佬的尊贵象征",
+                content: `<p style="font-size: 16px; text-align: center; color: var(--apple-text-secondary); margin-bottom: 16px;">黑松露的香气一开锅就弥漫全屋，和牛的油脂渗入糯米，灵芝带来一丝木质清香</p>
+                <p style="font-size: 15px; line-height: 1.8; color: var(--apple-text);"><strong>🔥 人格匹配：</strong>老天爷追着喂饭的顶配大佬。就像你，社交理性规划全拉满，不管是放纵还是做事全都游刃有余，自带主角光环！</p>`
+            }
+        };
+
+        let currentQuestionIndex = 0;
+        let scores = { N:0, J:0, W:0, Y:0, Q:0, R:0, L:0, S:0 };
+        let currentResult = null;
+
+        function startTest() {
+            document.getElementById('startPage').classList.add('hidden');
+            const qp = document.getElementById('questionPage');
+            qp.classList.remove('hidden');
+            qp.classList.add('slide-up');
+            initIndicators();
+            showQuestion();
+        }
+
+        function initIndicators() {
+            const container = document.getElementById('questionIndicator');
+            container.innerHTML = '';
+            for (let i = 0; i < questions.length; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'indicator-dot' + (i === 0 ? ' active' : '');
+                dot.id = 'dot-' + i;
+                container.appendChild(dot);
+            }
+        }
+
+        function updateIndicators() {
+            for (let i = 0; i < questions.length; i++) {
+                const dot = document.getElementById('dot-' + i);
+                if (!dot) continue;
+                dot.className = 'indicator-dot';
+                if (i < currentQuestionIndex) dot.classList.add('completed');
+                else if (i === currentQuestionIndex) dot.classList.add('active');
+            }
+        }
+
+        function showQuestion() {
+            const q = questions[currentQuestionIndex];
+            document.getElementById('questionTitle').textContent = q.title;
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+            document.getElementById('progressText').textContent = `${(currentQuestionIndex + 1) * 10}%`;
+            document.getElementById('progressBar').style.width = `${(currentQuestionIndex + 1) * 10}%`;
+
+            updateIndicators();
+
+            const opt = document.getElementById('optionsContainer');
+            opt.innerHTML = '';
+            q.options.forEach((o, idx) => {
+                const d = document.createElement('div');
+                d.className = 'option-card';
+                d.style.animationDelay = (idx * 0.05) + 's';
+                d.innerHTML = `<span style="font-size: 15px; line-height: 1.6; color: var(--apple-text); font-weight: 500;">${o.text}</span>`;
+                d.onclick = () => selectOption(o.letter, d);
+                opt.appendChild(d);
+
+                requestAnimationFrame(() => {
+                    d.style.opacity = '0';
+                    d.style.transform = 'translateY(12px)';
+                    setTimeout(() => {
+                        d.style.transition = 'all 0.35s cubic-bezier(0.25, 0.1, 0.25, 1)';
+                        d.style.opacity = '1';
+                        d.style.transform = 'translateY(0)';
+                    }, idx * 50);
+                });
+            });
+        }
+
+        function selectOption(letter, selectedElement) {
+            selectedElement.classList.add('selected');
+            scores[letter]++;
+            currentQuestionIndex++;
+            currentQuestionIndex < questions.length ? showQuestion() : showResult();
+        }
+
+        function showResult() {
+            const code = (scores.N >= scores.J ? 'N' : 'J') + (scores.Y >= scores.W ? 'Y' : 'W') + (scores.Q >= scores.R ? 'Q' : 'R') + (scores.L >= scores.S ? 'L' : 'S');
+            currentResult = results[code] || results["NWRS"];
+
+            document.getElementById('resultZongzi').src = currentResult.image;
+            document.getElementById('resultZongzi').alt = currentResult.zongzi;
+            document.getElementById('resultTitle').textContent = currentResult.title;
+            document.getElementById('resultCode').textContent = `本命粽：${currentResult.zongzi}`;
+            document.getElementById('resultDesc').textContent = currentResult.desc;
+            document.getElementById('resultShare').textContent = currentResult.share;
+
+            document.getElementById('questionPage').classList.add('hidden');
+            const rp = document.getElementById('resultPage');
+            rp.classList.remove('hidden');
+            rp.classList.add('page-enter');
+        }
+
+        function showZongziDetail() {
+            if (!currentResult) return;
+            const detail = zongziDetails[currentResult.zongzi];
+            if (!detail) return;
+
+            document.getElementById('zongziDetailImg').src = detail.img;
+            document.getElementById('zongziDetailImg').alt = detail.title;
+            document.getElementById('zongziDetailTitle').textContent = detail.title;
+            document.getElementById('zongziDetailSubtitle').textContent = detail.subtitle;
+            document.getElementById('zongziDetailContent').innerHTML = detail.content;
+
+            document.getElementById('zongziModal').style.display = 'flex';
+        }
+
+        function closeZongziModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            document.getElementById('zongziModal').style.display = 'none';
+        }
+
+        function restartTest() {
+            currentQuestionIndex = 0;
+            scores = { N:0, J:0, W:0, Y:0, Q:0, R:0, L:0, S:0 };
+            currentResult = null;
+            document.getElementById('resultPage').classList.add('hidden');
+            const sp = document.getElementById('startPage');
+            sp.classList.remove('hidden');
+            sp.classList.add('page-enter');
+        }
+    </script>
+</body>
+</html>
